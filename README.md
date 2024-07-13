@@ -6,7 +6,7 @@
 
 ## Endpoint
 
-`http:/localhost:9000/api`
+`http://localhost:9000/api`
 
 ## Response Template
 
@@ -18,7 +18,7 @@
     string,
     .....
   ],
-  "playload": [
+  "payload": [
     {
       .....
     },
@@ -49,7 +49,7 @@
   {
     "status": true,
     "messages": ["Akun berhasil didaftarkan"],
-    "playload": [
+    "payload": [
       {
         "id": 1,
         "username": "kana",
@@ -91,6 +91,7 @@
 - URL: `/login`
 - Method: `POST`
 - Request Body:
+
   ```json
   {
     "username": string,
@@ -105,7 +106,7 @@
   "messages": [
     "berhasil login"
   ],
-  "playload": [
+  "payload": [
     {
       "username": "kana",
       "email": "kana@gmail.com",
