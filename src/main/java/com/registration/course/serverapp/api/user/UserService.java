@@ -14,19 +14,19 @@ import lombok.AllArgsConstructor;
 public class UserService {
 
   @Autowired
-  UserRespository userRespository;
+  UserRepository userRepository;
 
   public List<User> getAll() {
     Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
-    return userRespository.findAll(sort);
+    return userRepository.findAll(sort);
   }
 
   public User getUserbyId(Integer id) {
-    return userRespository.findById(id).orElseThrow(() -> new EmptyResultDataAccessException("User", 0));
+    return userRepository.findById(id).orElseThrow(() -> new EmptyResultDataAccessException("User", 0));
   }
 
   public User getByUsername(String username) {
-    return userRespository.findByUsername(username).orElseThrow(() -> new EmptyResultDataAccessException("User", 0));
+    return userRepository.findByUsername(username).orElseThrow(() -> new EmptyResultDataAccessException("User", 0));
   }
 
 }

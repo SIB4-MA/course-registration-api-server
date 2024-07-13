@@ -15,26 +15,26 @@ import lombok.AllArgsConstructor;
 public class MemberService {
 
   @Autowired
-  MemberRespository memberRespository;
+  MemberRepository memberRepository;
 
   public List<Member> getAll() {
     Sort sort = Sort.by(Sort.Direction.DESC, "user.createdAt");
-    return memberRespository.findAll(sort);
+    return memberRepository.findAll(sort);
   }
 
   public Member getById(Integer id) {
-    return memberRespository.findById(id).orElseThrow(() -> new EmptyResultDataAccessException("member ", 0));
+    return memberRepository.findById(id).orElseThrow(() -> new EmptyResultDataAccessException("member ", 0));
   }
 
   public Member update(Integer id, Member member) {
-    Member chekingMember = this.getById(id);
-    if (!chekingMember.getEmail().equalsIgnoreCase(member.getEmail())) {
-      if (memberRespository.existsByEmail(member.getEmail())) {
+    Member checkingMember = this.getById(id);
+    if (!checkingMember.getEmail().equalsIgnoreCase(member.getEmail())) {
+      if (memberRepository.existsByEmail(member.getEmail())) {
         throw new DataIntegrityViolationException("Email");
       }
     }
     member.setId(id);
-    return memberRespository.save(member);
+    return memberRepository.save(member);
   }
 
   public Member updateCourseActiveById(Integer Id) {
@@ -42,7 +42,7 @@ public class MemberService {
     member.setId(Id);
     Integer currentActiveCourse = member.getActiveCourse();
     member.setActiveCourse(currentActiveCourse + 1);
-    return memberRespository.save(member);
+    return memberRepository.save(member);
   }
 
 }

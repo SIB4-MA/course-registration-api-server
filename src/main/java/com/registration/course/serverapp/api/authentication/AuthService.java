@@ -22,11 +22,11 @@ import com.registration.course.serverapp.api.dto.request.LoginRequest;
 import com.registration.course.serverapp.api.dto.request.UserRequest;
 import com.registration.course.serverapp.api.dto.response.LoginResponse;
 import com.registration.course.serverapp.api.member.Member;
-import com.registration.course.serverapp.api.member.MemberRespository;
+import com.registration.course.serverapp.api.member.MemberRepository;
 import com.registration.course.serverapp.api.role.Role;
 import com.registration.course.serverapp.api.role.RoleService;
 import com.registration.course.serverapp.api.user.User;
-import com.registration.course.serverapp.api.user.UserRespository;
+import com.registration.course.serverapp.api.user.UserRepository;
 
 import lombok.AllArgsConstructor;
 
@@ -35,7 +35,7 @@ import lombok.AllArgsConstructor;
 public class AuthService {
 
   @Autowired
-  UserRespository userRespository;
+  UserRepository userRepository;
 
   @Autowired
   ModelMapper modelMapper;
@@ -47,7 +47,7 @@ public class AuthService {
   PasswordEncoder passwordEncoder;
 
   @Autowired
-  MemberRespository memberRespository;
+  MemberRepository memberRepository;
 
   @Autowired
   AuthenticationManager authenticationManager;
@@ -62,11 +62,11 @@ public class AuthService {
     member.setUser(user);
     user.setMember(member);
 
-    if (userRespository.existsByUsername(userRequest.getUsername())) {
+    if (userRepository.existsByUsername(userRequest.getUsername())) {
       throw new DataIntegrityViolationException("username");
     }
 
-    if (memberRespository.existsByEmail(userRequest.getEmail())) {
+    if (memberRepository.existsByEmail(userRequest.getEmail())) {
       throw new DataIntegrityViolationException("email");
 
     }
@@ -84,7 +84,7 @@ public class AuthService {
     // set password with encoded
     user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
 
-    return userRespository.save(user);
+    return userRepository.save(user);
   }
 
   public LoginResponse login(LoginRequest loginRequest) {
@@ -98,7 +98,7 @@ public class AuthService {
     Authentication authentication = authenticationManager.authenticate(authRequest);
     SecurityContextHolder.getContext().setAuthentication(authentication);
 
-    User user = userRespository.findByUsernameOrMember_Email(loginRequest.getUsername(), loginRequest.getUsername())
+    User user = userRepository.findByUsernameOrMember_Email(loginRequest.getUsername(), loginRequest.getUsername())
         .get();
 
     UserDetails userDetails = appUserDetailService.loadUserByUsername(loginRequest.getUsername());
