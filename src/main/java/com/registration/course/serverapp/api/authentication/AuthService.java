@@ -5,14 +5,12 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -72,7 +70,7 @@ public class AuthService {
 
     }
 
-    // set default role 1 = admin 2 = user
+    // set default role 2 = admin 1 = user
     List<Role> roles = new ArrayList<>();
     roles.add(roleService.getById(1));
     user.setRoles(roles);
@@ -92,20 +90,14 @@ public class AuthService {
 
     authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
-    User user = userRepository.findByUsernameOrMember_Email(loginRequest.getUsername(), loginRequest.getUsername())
-        .get();
+    // User user = userRepository.findByUsernameOrMember_Email(loginRequest.getUsername(), loginRequest.getUsername())
+    //     .get();
 
-    UserDetails userDetails = appUserDetailService.loadUserByUsername(loginRequest.getUsername());
-
-    List<String> authorities = userDetails.getAuthorities().stream().map(authority -> authority.getAuthority())
-        .collect(Collectors.toList());
+    AppUserDetail userDetails = appUserDetailService.loadUserByUsername(loginRequest.getUsername());
 
     var jwtToken = jwtService.generateToken(userDetails);
-    // response => user detail = username, email, List<GrantedAuthority>
+
     return LoginResponse.builder()
-        .username(user.getUsername())
-        .email(user.getMember().getEmail())
-        .authorities(authorities)
         .token(jwtToken)
         .build();
   }

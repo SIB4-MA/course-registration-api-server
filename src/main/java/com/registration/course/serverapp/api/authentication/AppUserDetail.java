@@ -33,6 +33,10 @@ public class AppUserDetail implements UserDetails {
 
   }
 
+  public String getEmail(){
+    return user.getMember().getEmail();
+  }
+
   @Override
   public String getPassword() {
     return user.getPassword();
