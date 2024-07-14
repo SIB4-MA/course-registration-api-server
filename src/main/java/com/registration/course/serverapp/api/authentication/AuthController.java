@@ -5,12 +5,12 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.registration.course.serverapp.api.dto.request.LoginRequest;
 import com.registration.course.serverapp.api.dto.request.UserRequest;
@@ -18,11 +18,11 @@ import com.registration.course.serverapp.api.dto.response.LoginResponse;
 import com.registration.course.serverapp.api.dto.response.ResponseData;
 import com.registration.course.serverapp.api.user.User;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
-@Controller
-@AllArgsConstructor
+@RestController
 @RequestMapping
+@RequiredArgsConstructor
 public class AuthController {
 
   @Autowired

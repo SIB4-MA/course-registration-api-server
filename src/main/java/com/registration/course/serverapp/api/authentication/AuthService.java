@@ -12,8 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,6 +19,7 @@ import org.springframework.stereotype.Service;
 import com.registration.course.serverapp.api.dto.request.LoginRequest;
 import com.registration.course.serverapp.api.dto.request.UserRequest;
 import com.registration.course.serverapp.api.dto.response.LoginResponse;
+import com.registration.course.serverapp.api.jwt.JwtService;
 import com.registration.course.serverapp.api.member.Member;
 import com.registration.course.serverapp.api.member.MemberRepository;
 import com.registration.course.serverapp.api.role.Role;
@@ -55,6 +54,8 @@ public class AuthService {
   @Autowired
   AppUserDetailService appUserDetailService;
 
+  private final JwtService jwtService;
+
   public User register(UserRequest userRequest) {
     Member member = modelMapper.map(userRequest, Member.class);
     User user = modelMapper.map(userRequest, User.class);
@@ -71,7 +72,7 @@ public class AuthService {
 
     }
 
-    // set default role
+    // set default role 1 = admin 2 = user
     List<Role> roles = new ArrayList<>();
     roles.add(roleService.getById(1));
     user.setRoles(roles);
@@ -87,16 +88,9 @@ public class AuthService {
     return userRepository.save(user);
   }
 
-  public LoginResponse login(LoginRequest loginRequest) {
+  public LoginResponse login(LoginRequest loginRequest) { 
 
-    // authentication => login request username & password
-    UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(
-        loginRequest.getUsername(),
-        loginRequest.getPassword());
-
-    // set principle
-    Authentication authentication = authenticationManager.authenticate(authRequest);
-    SecurityContextHolder.getContext().setAuthentication(authentication);
+    authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
     User user = userRepository.findByUsernameOrMember_Email(loginRequest.getUsername(), loginRequest.getUsername())
         .get();
@@ -106,7 +100,13 @@ public class AuthService {
     List<String> authorities = userDetails.getAuthorities().stream().map(authority -> authority.getAuthority())
         .collect(Collectors.toList());
 
+    var jwtToken = jwtService.generateToken(userDetails);
     // response => user detail = username, email, List<GrantedAuthority>
-    return new LoginResponse(user.getUsername(), user.getMember().getEmail(), authorities);
+    return LoginResponse.builder()
+        .username(user.getUsername())
+        .email(user.getMember().getEmail())
+        .authorities(authorities)
+        .token(jwtToken)
+        .build();
   }
 }
