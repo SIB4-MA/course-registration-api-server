@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.registration.course.serverapp.api.authentication.AppUserDetail;
+import com.registration.course.serverapp.api.member.Member;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -35,15 +36,17 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
-    public String generateToken(AppUserDetail userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
+    public String generateToken(AppUserDetail userDetails, Member member) {
+        return generateToken(new HashMap<>(), userDetails, member);
     }
 
-    public String generateToken(Map<String, Object> extraClaims, AppUserDetail userDetails) {
+    public String generateToken(Map<String, Object> extraClaims, AppUserDetail userDetails, Member member) {
         extraClaims.put("email", userDetails.getEmail());
         extraClaims.put("autorities",
                 userDetails.getAuthorities().stream().map(authority -> authority.getAuthority())
                         .collect(Collectors.toList()));
+        extraClaims.put("name", member.getName());
+
 
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.MONTH, 1);

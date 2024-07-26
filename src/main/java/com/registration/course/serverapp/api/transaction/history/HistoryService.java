@@ -21,7 +21,8 @@ public class HistoryService {
   private HistoryRepository historyRepository;
 
   public List<History> getAll() {
-    return historyRepository.findAll();
+    Sort sort = Sort.by(Sort.Direction.DESC, "date");
+    return historyRepository.findAll(sort);
   }
 
   public History addHistory(Transaction transaction) {

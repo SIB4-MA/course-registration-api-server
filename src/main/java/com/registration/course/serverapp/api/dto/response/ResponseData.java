@@ -14,3 +14,4 @@ public class ResponseData<T> {
   private List<String> messages = new ArrayList<>();
   private List<T> payload = new ArrayList<>();
 }
+

@@ -3,8 +3,8 @@ package com.registration.course.serverapp.api.authentication;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,7 +71,7 @@ public class AuthService {
     }
 
     // set default role 2 = admin 1 = user
-    List<Role> roles = new ArrayList<>();
+    Set<Role> roles = new HashSet<>();
     roles.add(roleService.getById(1));
     user.setRoles(roles);
 
@@ -90,12 +90,12 @@ public class AuthService {
 
     authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
-    // User user = userRepository.findByUsernameOrMember_Email(loginRequest.getUsername(), loginRequest.getUsername())
-    //     .get();
+    User user = userRepository.findByUsernameOrMember_Email(loginRequest.getUsername(), loginRequest.getUsername())
+        .get();
 
     AppUserDetail userDetails = appUserDetailService.loadUserByUsername(loginRequest.getUsername());
 
-    var jwtToken = jwtService.generateToken(userDetails);
+    var jwtToken = jwtService.generateToken(userDetails, user.getMember());
 
     return LoginResponse.builder()
         .token(jwtToken)
